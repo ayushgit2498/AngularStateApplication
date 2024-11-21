@@ -1,0 +1,19 @@
+// Modal
+.modal.fade.show {
+  display: block;
+  background: rgba(0, 0, 0, 0.4);
+}
+.card-title {
+  color: black;
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
+  &:hover {
+    color: #007bff;
+    text-decoration: none;
+  }
+}
+.card-body button:nth-last-child(1) {
+  margin-left: 5px;
+}
