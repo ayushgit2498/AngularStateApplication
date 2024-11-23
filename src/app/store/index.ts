@@ -18,8 +18,8 @@ export const storageSettings: StorageKey[] = [
     key: enStateNames.AppUserState,
     engine: SESSION_STORAGE_ENGINE,
   },
-  {
-    key: enStateNames.AppEmployeeState,
-    engine: LOCAL_STORAGE_ENGINE,
-  },
+  // {
+  //   key: enStateNames.AppEmployeeState,
+  //   engine: LOCAL_STORAGE_ENGINE,
+  // },
 ];

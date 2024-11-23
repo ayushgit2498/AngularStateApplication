@@ -6,20 +6,20 @@ export class GetEmployees {
 
 export class GetEmployee {
   static readonly type = '[Employees] Get';
-  constructor(id: number) {}
+  constructor(public id: number) {}
 }
 
 export class AddEmployee {
   static readonly type = '[Employees] Add';
-  constructor(emp: Employee) {}
+  constructor(public emp: Employee) {}
 }
 
 export class UpdateEmployee {
   static readonly type = '[Employees] Update';
-  constructor(emp: Employee) {}
+  constructor(public emp: Employee) {}
 }
 
 export class DeleteEmployee {
   static readonly type = '[Employees] Delete';
-  constructor(id: number) {}
+  constructor(public id: number) {}
 }

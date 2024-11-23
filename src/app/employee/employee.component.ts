@@ -2,6 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EmployeeService } from '../Services/employee.service';
 import { Employee } from '../Models/employee.model';
+import { EmployeeState } from '../store/employee.state';
+import { Select, Store } from '@ngxs/store';
+import {
+  DeleteEmployee,
+  GetEmployees,
+  UpdateEmployee,
+} from '../store/employee.actions';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-employee',
@@ -15,7 +23,19 @@ export class EmployeeComponent implements OnInit {
   employees: Employee[] | undefined;
   employeeId: number = 0;
 
-  constructor(private fb: FormBuilder, private _empService: EmployeeService) {
+  @Select(EmployeeState.getEmployeeList) employees$:
+    | Observable<Employee[]>
+    | undefined;
+
+  @Select(EmployeeState.isEmployeeDataPresent) isEmployeeDataPresent$:
+    | Observable<boolean>
+    | undefined;
+
+  constructor(
+    private fb: FormBuilder,
+    private _empService: EmployeeService,
+    private store: Store
+  ) {
     this.empForm = this.fb.group({
       id: ['0'],
       name: ['', Validators.required],
@@ -25,13 +45,21 @@ export class EmployeeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.store.selectSnapshot(EmployeeState.isEmployeeDataPresent)) {
+      this.employees = this.store.selectSnapshot(EmployeeState.getEmployeeList);
+      return;
+    }
+
     this.getEmployees();
+    this.employees$?.subscribe({
+      next: (data) => {
+        this.employees = data;
+      },
+    });
   }
 
   getEmployees() {
-    this._empService
-      .getEmployeeList()
-      .subscribe((data) => (this.employees = data));
+    this.store.dispatch(new GetEmployees());
   }
 
   onEmpSubmit() {
@@ -48,11 +76,10 @@ export class EmployeeComponent implements OnInit {
       console.log(employeeRecord);
 
       if (this.editMode) {
-        this._empService.updateEmployee(employeeRecord).subscribe((data) => {
-          this.getEmployees();
-          this.onCloseModal();
-        });
+        this.store.dispatch(new UpdateEmployee(employeeRecord));
+        this.onCloseModal();
       } else {
+        employeeRecord.id = 0;
         this._empService.addEmployee(employeeRecord).subscribe((data) => {
           this.getEmployees();
           this.onCloseModal();
@@ -73,12 +100,26 @@ export class EmployeeComponent implements OnInit {
     this.editMode = true;
     this.showModal = true;
     this.employeeId = id;
+
+    var selectedEmployee = this.employees?.find((i) => i.id === id);
+
+    this.empForm.reset({
+      name: selectedEmployee?.name,
+      position: selectedEmployee?.position,
+      dept: selectedEmployee?.dept,
+    });
   }
 
   onDeleteEmployee(id: any) {
-    this._empService.deleteEmployee(id).subscribe((data) => {
-      this.getEmployees();
+    this.store.dispatch(new DeleteEmployee(id));
+    this.employees$?.subscribe({
+      next: (data) => {
+        this.employees = data;
+      },
     });
+    // When we delete employee from store the store will be updated. In this case the selector of getEmployeeList will send
+    // a signal to our observable of employee$. We have subsribed to this employee$ observable which updates the employee array used in html file
+    // We can write the subsribe to selector code here again just for safety purpose
   }
 
   onAddEmployee() {
@@ -94,6 +135,7 @@ export class EmployeeComponent implements OnInit {
 
   onReset() {
     this.empForm.reset({
+      id: 0,
       name: '',
       position: '',
       dept: '',
