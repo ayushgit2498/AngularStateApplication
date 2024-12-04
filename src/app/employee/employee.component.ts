@@ -60,6 +60,11 @@ export class EmployeeComponent implements OnInit {
 
   getEmployees() {
     this.store.dispatch(new GetEmployees());
+    this.employees$?.subscribe({
+      next: (data) => {
+        this.employees = data;
+      },
+    });
   }
 
   onEmpSubmit() {

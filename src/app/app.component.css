@@ -1,0 +1,14 @@
+nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 15px;
+}
+
+button {
+  border-radius: 3px;
+  border: none;
+  padding: 5px 10px;
+  font-size: 1.2rem;
+  background-color: rgb(180, 65, 65);
+  color: white;
+}

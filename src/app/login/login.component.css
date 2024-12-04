@@ -1,0 +1,15 @@
+div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 56px);
+}
+button {
+  height: 10vh;
+  width: 15vw;
+  box-shadow: inset 0px 3px 6px #00000029;
+  border: 3px solid #ffffff;
+  border-radius: 8px;
+  text-align: center;
+  background-color: rgb(206, 204, 98);
+}
